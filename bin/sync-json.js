@@ -8,8 +8,8 @@ diff = require('../lib/index').diff;
 
 colorize = require('../lib/colorize').colorize;
 
-search = require('../lib/creator').search;
-generate = require('../lib/creator').generate;
+search = require('./creator').search;
+generate = require('./creator').generate;
 
 (function(argv) {
     var data1, data2, json1, json2, options, result;
