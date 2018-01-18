@@ -34,6 +34,26 @@
 		}
 	}
 
+	function find(searchReg, dirPath) {
+		var result = {},
+			execResult = [],
+			// /[{ ]t\('([a-zA-Z]+\.)*[A-Z_]+'\)/
+			paths = fs.readdirSync(dirPath);
+		for (var i = 0; i < paths.length; i++) {
+			var p = dirPath + paths[i];
+			if (fs.lstatSync(p).isFile()) {
+				result[p] = [];
+				var content = fs.readFileSync(p)
+				while (execResult = searchReg.exec(content)) {
+					result[p].push(execResult[0]);
+				}
+			} else {
+				find(searchReg, p + '/');
+			}
+		}
+		return result;
+	}
+
 	module.exports = {
 		search: function(result) {
 			searchKey(result, '')
@@ -42,7 +62,10 @@
 				extra: extra
 			}
 		},
-		generate: function(data, missing, extra) {
+		findLocaleRef: function(dirPath) {
+			return find(/[{ ]t\(['`]{1}[\S+\.]*[A-Z_]+['`]{1}\)/g, dirPath);
+		},
+		generate: function(fileName, data, missing, extra) {
 			for (var i = 0; i < missing.length; i++) {
 				var key = missing[i];
 				optionObject(data, 'add', key, 'NEED_APPEND');
@@ -51,9 +74,11 @@
 				var key = extra[i];
 				optionObject(data, 'remove', key);	
 			}
-			fs.writeFileSync('../result/generate.json', JSON.stringify(data));
-			fs.writeFileSync('../result/append-result.json', JSON.stringify(missing))
-			fs.writeFileSync('../result/remove-result.json', JSON.stringify(extra))
+			var fileRegExp = /[a-zA-Z]+\.[a-z]+/;
+			var newFileName = fileRegExp.exec(fileName)[0]
+			fs.writeFileSync('../result/' + newFileName.replace(/\.[a-z]+/, '.json'), JSON.stringify(data));
+			fs.writeFileSync('../result/' + newFileName.replace(/\.[a-z]+/, '-append.json'), JSON.stringify(missing))
+			fs.writeFileSync('../result/' + newFileName.replace(/\.[a-z]+/, '-remove.json'), JSON.stringify(extra))
 		}
 	}
 }).call(this)
