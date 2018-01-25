@@ -1,6 +1,7 @@
 var colorize, diff, fs, tty;
 
 tty = require('tty');
+fs = require('fs');
 
 findRef = require('./creator').findLocaleRef;
 
@@ -12,7 +13,8 @@ findRef = require('./creator').findLocaleRef;
       "  dir source              Find Directory #var(dirPath) #required",
     ], argv);
     result = findRef(options.dirPath);
-    process.stderr.write(JSON.stringify(result));
+    // process.stderr.write(JSON.stringify(result));
+    fs.writeFileSync('../result/ref.json', JSON.stringify(result, null, 2));
     if (result) {
       return process.exit(1);
     }
