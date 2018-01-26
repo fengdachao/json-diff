@@ -1,19 +1,14 @@
 {
-  "author": "Andrey Tarantsov <andreyvit@me.com>",
+  "author": "DaChao",
   "contributors": [
-    "Gavriel Fleischer <flocsy@gmail.com>"
+    "Martin"
   ],
   "name": "json-diff",
-  "description": "JSON diff",
+  "description": "JSON diff for locale",
   "version": "0.5.2",
-  "homepage": "https://github.com/andreyvit/json-diff",
-  "repository": {
-    "url": "git@github.com:andreyvit/json-diff.git"
-  },
   "main": "lib/index.js",
-  "bin": "bin/json-diff.js",
+  "bin": "bin/sync-json.js",
   "scripts": {
-    "prepare": "./node_modules/.bin/coffee-script -c lib",
     "test": "./node_modules/mocha/bin/mocha test/*.coffee",
     "cov": "rm -rf lib-cov; jscoverage lib lib-cov; env JSLIB=lib-cov mocha -R dot && env JSLIB=lib-cov mocha -R html-cov >coverage.html; open coverage.html"
   },

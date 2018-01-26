@@ -97,43 +97,6 @@
 		return result;
 	}
 
-	function formatter(jsonData, indent) {
-		var val = '', result = '';
-		if (isObject(jsonData)) {
-			result += '{' + ENTER;
-			for(var key in jsonData) {
-				val = jsonData[key];
-				if (val === undefined) continue;
-				result += indent + TAB + '"' + key + '" : ';
-				if ( typeof val !== 'object' ) {
-					val = val.replace(/"/g, '\'');
-					result += '"' + val + '",' + ENTER;
-				} else {
-					result += formatter(val, indent + TAB + TAB);
-				}
-			}
-			result = result.slice(0, -3) + ENTER;
-			result += indent + '},' + ENTER;
-		} else if (isArray(jsonData)) {
-			result += '[' + ENTER;
-			for(var index = 0; index < jsonData.length; index++) {
-				val = jsonData[index];
-				if ( typeof val !== 'object' ) {
-					val = val.replace(/"/g, '\'');
-					result += indent + TAB + '"' + val + '"';
-					if (index === jsonData.length - 1) result += ENTER;
-					else result += ',' + ENTER;
-				} else {
-					result += formatter(val, indent + TAB);
-				}
-			}
-			result += indent + '],' + ENTER;
-		} else {
-			result += indent + jsonData;
-		}
-		return result;
-	}
-
 	module.exports = {
 		search: function(result) {
 			searchKey(result, '')
