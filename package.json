@@ -1,11 +1,11 @@
 {
-  "author": "DaChao",
+  "author": "Martin",
   "contributors": [
     "Martin"
   ],
-  "name": "json-diff",
+  "name": "locale-json-diff",
   "description": "JSON diff for locale",
-  "version": "0.5.2",
+  "version": "1.0.1",
   "main": "lib/index.js",
   "bin": "bin/sync-json.js",
   "scripts": {

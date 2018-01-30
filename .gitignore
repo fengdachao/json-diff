@@ -4,3 +4,4 @@ node_modules
 coverage.html
 result
 test
+.vscode/*

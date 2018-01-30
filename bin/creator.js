@@ -1,134 +1,137 @@
-(function() {
-	var TAB = '\t', ENTER = '\r\n';
-	var fs = require('fs');
+var TAB = '\t', ENTER = '\r\n';
+var fs = require('fs');
 
-	var missing = [], extra = [];
+var missing = [], extra = [];
 
-	function isArray(obj) {
-		return Object.prototype.toString.call(obj) === '[object Array]';
-	}
+function isArray(obj) {
+	return Object.prototype.toString.call(obj) === '[object Array]';
+}
 
-	function isObject(obj) {
-		return Object.prototype.toString.call(obj) === '[object Object]';
-	}
+function isObject(obj) {
+	return Object.prototype.toString.call(obj) === '[object Object]';
+}
 
-	function trimKeyOption(key) {
-		return key.indexOf('__deleted') !== -1 ? key.slice(0, -9) : key.slice(0, -7);
-	}
+function trimKeyOption(key) {
+	return key.indexOf('__deleted') !== -1 ? key.slice(0, -9) : key.slice(0, -7);
+}
 
-	function getObjectKeys(obj, pkey) {
-		var result = [];
-		for(var key in obj) {
-			var val = obj[key];
-			if (typeof val === 'string' || isArray(val)) {
-				result.push(pkey + key);
-			} else if(isObject(val)) {
-				result = result.concat(getObjectKeys(val, pkey + key + '.'));
-			}
+function getObjectKeys(obj, pkey) {
+	var result = [];
+	for(var key in obj) {
+		var val = obj[key];
+		if (typeof val === 'string' || isArray(val)) {
+			result.push(pkey + key);
+		} else if(isObject(val)) {
+			result = result.concat(getObjectKeys(val, pkey + key + '.'));
 		}
-		return result;
 	}
-	
-	function searchKey(data, pkey) {
-		for(var key in data) {
-			var val = data[key],
-				optionKeys = [];
+	return result;
+}
 
-			if (key.indexOf('__deleted') !== -1 || key.indexOf('__added') !== -1) {
-				if (typeof val === 'string') {
-						optionKeys.push(pkey + trimKeyOption(key));
-				} else if (isObject(val)) {
-					optionKeys = optionKeys.concat(getObjectKeys(val, pkey + trimKeyOption(key) + '.'));
-				}
-				key.indexOf('__deleted') !== -1 ?
-					missing = missing.concat(optionKeys) :
-					extra = extra.concat(optionKeys);
+function searchKey(data, pkey) {
+	for(var key in data) {
+		var val = data[key],
+			optionKeys = [];
+
+		if (key.indexOf('__deleted') !== -1 || key.indexOf('__added') !== -1) {
+			if (typeof val === 'string') {
+					optionKeys.push(pkey + trimKeyOption(key));
 			} else if (isObject(val)) {
-				searchKey(val, pkey + key + '.');
+				optionKeys = optionKeys.concat(getObjectKeys(val, pkey + trimKeyOption(key) + '.'));
 			}
-
-			// if (typeof val === 'string') {
-			// 	if (key.indexOf('__deleted') !== -1) {
-			// 		missing.push(pkey + key.slice(0, -9))
-			// 	} else if (key.indexOf('__added') !== -1) {
-			// 		extra.push(pkey + key.slice(0, -7))
-			// 	}
-			// } else if (typeof val === 'object') {
-			// 	searchKey(val, pkey + key + '.')
-			// }
+			key.indexOf('__deleted') !== -1 ?
+				missing = missing.concat(optionKeys) :
+				extra = extra.concat(optionKeys);
+		} else if (isObject(val)) {
+			searchKey(val, pkey + key + '.');
 		}
+
+		// if (typeof val === 'string') {
+		// 	if (key.indexOf('__deleted') !== -1) {
+		// 		missing.push(pkey + key.slice(0, -9))
+		// 	} else if (key.indexOf('__added') !== -1) {
+		// 		extra.push(pkey + key.slice(0, -7))
+		// 	}
+		// } else if (typeof val === 'object') {
+		// 	searchKey(val, pkey + key + '.')
+		// }
 	}
+}
 
-	function optionObject(data, opt, keyStr, value) {
-		if (keyStr === '') return;
-		var keys = keyStr.split('.');
-		var key = keys[0],
-			_data = data;
-		for (var i = 0; i < keys.length - 1; i++) {
-			key = keys[i];
-			if (_data[key] === undefined) _data[key] = {};
-			_data = _data[key];
-		}
+function optionObject(data, opt, keyStr, value) {
+	if (keyStr === '') return;
+	var keys = keyStr.split('.');
+	var key = keys[0],
+		_data = data;
+	for (var i = 0; i < keys.length - 1; i++) {
 		key = keys[i];
-		if (opt === 'add') {
-			_data[key] = value;
-		} else {
-			_data[key] = undefined;
-		}
+		if (_data[key] === undefined) _data[key] = {};
+		_data = _data[key];
 	}
+	key = keys[i];
+	if (opt === 'add') {
+		_data[key] = value;
+	} else {
+		_data[key] = undefined;
+	}
+}
 
-	function find(searchReg, dirPath) {
-		var result = {},
-			execResult = [],
-			// /[{ ]t\('([a-zA-Z]+\.)*[A-Z_]+'\)/
-			paths = fs.readdirSync(dirPath);
-		for (var i = 0; i < paths.length; i++) {
-			var p = dirPath + paths[i];
-			if (fs.lstatSync(p).isFile()) {
-				result[p] = [];
-				var content = fs.readFileSync(p)
-				while (execResult = searchReg.exec(content)) {
-					result[p].push(execResult[0]);
+function find(searchReg, dirPath, result, allKeys) {
+	var execResult = [],
+		// /[{ ]t\('([a-zA-Z]+\.)*[A-Z_]+'\)/
+		paths = fs.readdirSync(dirPath);
+	for (var i = 0; i < paths.length; i++) {
+		var p = dirPath + paths[i];
+		if (fs.lstatSync(p).isFile()) {
+			var content = fs.readFileSync(p)
+			while (execResult = searchReg.exec(content)) {
+				if (!result[p]) {
+					result[p] = []
 				}
-			} else {
-				find(searchReg, p + '/');
+				result[p].push(execResult[1]);
+				allKeys.push(execResult[1]);
 			}
-		}
-		return result;
-	}
-
-	module.exports = {
-		search: function(result) {
-			searchKey(result, '')
-			return {
-				missing: missing,
-				extra: extra
-			}
-		},
-		findLocaleRef: function(dirPath) {
-			return find(/[{ ]t\(['`]{1}[\S+\.]*[A-Z_]+['`]{1}\)/g, dirPath);
-		},
-		generate: function(fileName, data, missing, extra, diff) {
-			for (var i = 0; i < missing.length; i++) {
-				var key = missing[i];
-				optionObject(data, 'add', key, 'NEED_APPEND');
-			}
-			for (var i = 0; i < extra.length; i++) {
-				var key = extra[i];
-				optionObject(data, 'remove', key);
-			}
-			var fileRegExp = /[a-zA-Z]+\.[a-z]+/;
-			var newFileName = fileRegExp.exec(fileName)[0]
-			var formatterJson = JSON.stringify(data, null, 2); //formatter = formatter(data, TAB, formatterJson);
-
-			fs.writeFileSync('../result/' + newFileName.replace(/\.[a-z]+/, '.json'), formatterJson);
-			fs.writeFileSync('../result/' + newFileName.replace(/\.[a-z]+/, '-append.json'), JSON.stringify(missing, null, 2));
-			fs.writeFileSync('../result/' + newFileName.replace(/\.[a-z]+/, '-remove.json'), JSON.stringify(extra, null, 2));
-			fs.writeFileSync('../result/' + newFileName.replace(/\.[a-z]+/, '-diff.json'), JSON.stringify(diff, null, 2));
+		} else {
+			find(searchReg, p + '/', result, allKeys);
 		}
 	}
-}).call(this)
+}
 
+module.exports = {
+	search: function(result) {
+		searchKey(result, '')
+		return {
+			missing: missing,
+			extra: extra
+		}
+	},
+	findLocaleRef: function(dirPath, recordResult) {
+		var findResult = {}, findKeys = [], localeKeyInRef = {};
+		find(/[{ ]t\(['`]{1}([\S+\.]*[A-Z_]+)['`]{1}\)/ig, dirPath, findResult, findKeys);
+		if (recordResult) fs.writeFileSync('../result/_refinfile.json', JSON.stringify(findResult, null, 2));
+		// generate a obj
+		for(var i = 0; i < findKeys.length; i++) {
+			optionObject(localeKeyInRef, 'add', findKeys[i], 'TEMP_VALUE');
+		}
 
+		return localeKeyInRef;
+	},
+	generate: function(fileName, data, missing, extra, diff) {
+		for (var i = 0; i < missing.length; i++) {
+			var key = missing[i];
+			optionObject(data, 'add', key, 'NEED_APPEND');
+		}
+		for (var i = 0; i < extra.length; i++) {
+			var key = extra[i];
+			optionObject(data, 'remove', key);
+		}
+		var fileRegExp = /[a-zA-Z]+\.[a-z]+/;
+		var newFileName = fileRegExp.exec(fileName)[0]
+		var formatterJson = JSON.stringify(data, null, 2); //formatter = formatter(data, TAB, formatterJson);
 
-
+		fs.writeFileSync('../result/' + newFileName.replace(/\.[a-z]+/, '.json'), formatterJson);
+		fs.writeFileSync('../result/' + newFileName.replace(/\.[a-z]+/, '-append.json'), JSON.stringify(missing, null, 2));
+		fs.writeFileSync('../result/' + newFileName.replace(/\.[a-z]+/, '-remove.json'), JSON.stringify(extra, null, 2));
+		fs.writeFileSync('../result/' + newFileName.replace(/\.[a-z]+/, '-diff.json'), JSON.stringify(diff, null, 2));
+	}
+}

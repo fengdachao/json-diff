@@ -13,7 +13,17 @@ generate = require('./creator').generate;
 
 (function(argv) {
     var data1, data2, json1, json2, options, result;
-    options = require('dreamopt')(["Usage: json-diff [-vjCk] first.json second.json", "Arguments:", "  first.json              Old file #var(file1) #required", "  second.json             New file #var(file2) #required", "General options:", "  -v, --verbose           Output progress info", "  -C, --[no-]color        Colored output", "  -j, --raw-json          Display raw JSON encoding of the diff #var(raw)", "  -k, --keys-only         Compare only the keys, ignore the differences in values #var(keysOnly)"], argv);
+    options = require('dreamopt')([
+      "Usage: json-diff [-vjCk] first.json second.json",
+      "Arguments:",
+      "  first.json              Old file #var(file1) #required",
+      "  second.json             New file #var(file2) #required",
+      "General options:",
+      "  -v, --verbose           Output progress info",
+      "  -C, --[no-]color        Colored output",
+      "  -j, --raw-json          Display raw JSON encoding of the diff #var(raw)",
+      "  -k, --keys-only         Compare only the keys, ignore the differences in values #var(keysOnly)"
+    ], argv);
     if (options.verbose) {
       process.stderr.write((JSON.stringify(options, null, 2)) + "\n");
     }
