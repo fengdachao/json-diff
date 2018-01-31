@@ -6,9 +6,12 @@
   "name": "locale-json-diff",
   "description": "JSON diff for locale",
   "version": "1.0.1",
-  "main": "lib/index.js",
-  "bin": "bin/sync-json.js",
+  "config": {
+    "peridotpath": "/code/synchronoss/peridot/ux/src/components/"
+  },
   "scripts": {
+    "test:sync": "node bin/sync-json.js test/en.json test/ch.json",
+    "test:find": "node bin/find-localeref.js test/en.json $npm_package_config_peridotpath",
     "test": "./node_modules/mocha/bin/mocha test/*.coffee",
     "cov": "rm -rf lib-cov; jscoverage lib lib-cov; env JSLIB=lib-cov mocha -R dot && env JSLIB=lib-cov mocha -R html-cov >coverage.html; open coverage.html"
   },

@@ -2,10 +2,10 @@ var colorize, diff, fs, tty, generate, search;
 
 tty = require('tty');
 fs = require('fs');
-generate = require('./creator').generate;
-findRef = require('./creator').findLocaleRef;
+generate = require('../lib/creator').generate;
+findRef = require('../lib/creator').findLocaleRef;
 diff = require('../lib/index').diff;
-search = require('./creator').search;
+search = require('../lib/creator').search;
 
 (function(argv) {
   var localeContent, options, refKeys, result, creatorResult;
@@ -19,10 +19,9 @@ search = require('./creator').search;
   localeContent = JSON.parse(localeContent);
   refKeys = findRef(options.dirPath, true);
   result = diff(localeContent, refKeys, {keysOnly: true});
-  // process.stderr.write(JSON.stringify(result));
   creatorResult = search(result);
   generate('ref-info.js', JSON.parse(JSON.stringify(refKeys)), creatorResult.missing, creatorResult.extra, result);
-  fs.writeFileSync('../result/ref.json', JSON.stringify(refKeys, null, 2));
+  fs.writeFileSync('result/ref.json', JSON.stringify(refKeys, null, 2));
   if (result) {
     return process.exit(1);
   }
