@@ -5,7 +5,7 @@
   ],
   "name": "locale-json-diff",
   "description": "JSON diff for locale",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "config": {
     "peridotpath": "/code/synchronoss/peridot/ux/src/components/"
   },
