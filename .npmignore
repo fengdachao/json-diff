@@ -1,7 +1,7 @@
 *.coffee
 /example
 /doc
-/test
 /lib-cov
+/result
 coverage.html
 yarn.lock
