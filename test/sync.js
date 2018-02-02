@@ -26,10 +26,31 @@ describe('sync json', function() {
     var result = diff(json1, json2, {keysOnly: true});
     var diffResult = search(result);
     it('missing', function() {
-        assert.deepEqual(diffResult.missing, ['title', 'settings', 'mail.toolbar.value'], 'missing is not correct.');
+        assert.deepEqual(diffResult.missing, 
+            [
+                {
+                    key: 'title',
+                    value: 'tttt'
+                }, {
+                    key: 'settings',
+                    value: true,
+                }, {
+                    key: 'mail.toolbar.value',
+                    value: 1,
+                }
+            ], 'missing is not correct.');
     });
     it('extra', function() {
-        assert.deepEqual(diffResult.extra, ['title1', 'mail.toolbar.color'], 'extra is not correct.');    
+        assert.deepEqual(diffResult.extra,
+            [
+                {
+                    key: 'title1',
+                    value: 'tttt'
+                }, {
+                    key: 'mail.toolbar.color',
+                    value: 'black',
+                }
+        ], 'extra is not correct.');    
     });
     it('generate file', function() {
         generate('test.js', json2, diffResult.missing, diffResult.extra);
