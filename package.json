@@ -5,15 +5,10 @@
   ],
   "name": "locale-json-diff",
   "description": "JSON diff for locale",
-  "version": "1.1.0",
-  "config": {
-    "peridotpath": "/code/synchronoss/peridot/ux/src/components/"
-  },
+  "version": "1.1.3",
   "scripts": {
     "test:sync": "node bin/sync-json.js test/en.json test/ch.json",
-    "test:find": "node bin/find-localeref.js test/en.json $npm_package_config_peridotpath",
-    "test": "./node_modules/mocha/bin/mocha test/*.coffee",
-    "cov": "rm -rf lib-cov; jscoverage lib lib-cov; env JSLIB=lib-cov mocha -R dot && env JSLIB=lib-cov mocha -R html-cov >coverage.html; open coverage.html"
+    "test:find": "node bin/find-localeref.js test/en.json $npm_package_config_peridotpath"
   },
   "dependencies": {
     "cli-color": "~0.1.6",
