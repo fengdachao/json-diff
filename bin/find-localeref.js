@@ -20,8 +20,10 @@ search = require('../lib/creator').search;
   refKeys = findRef(options.dirPath, true);
   result = diff(refKeys, localeContent, {keysOnly: true});
   creatorResult = search(result);
-  generate('ref-info.js', JSON.parse(JSON.stringify(refKeys)), creatorResult.missing, creatorResult.extra, result);
   fs.writeFileSync('result/ref.json', JSON.stringify(refKeys, null, 2));
+  fs.writeFileSync('result/ref-diff.json', JSON.stringify(result, null, 2));
+  generate('info.js', JSON.parse(JSON.stringify(refKeys)), creatorResult.missing, creatorResult.extra);
+  
   if (result) {
     return process.exit(1);
   }
