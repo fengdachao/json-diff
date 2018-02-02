@@ -31,7 +31,8 @@ generate = require('../lib/creator').generate;
     if (result) {
       var creatorResult = search(result);
       process.stderr.write("Generate sync json file...\n");
-      generate(options.file2, json2, creatorResult.missing, creatorResult.extra, result);      
+      fs.writeFileSync('result/diff.json', JSON.stringify(result, null, 2));
+      generate(options.file2, json2, creatorResult.missing, creatorResult.extra);      
     } else {
       process.stderr.write("No diff");
     }

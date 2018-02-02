@@ -5,3 +5,4 @@ node_modules
 coverage.html
 result
 .vscode/*
+package-lock.json
