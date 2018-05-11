@@ -11,6 +11,7 @@ describe('sync json', function() {
                 label: 'button1',
                 value: 1,
             },
+            list: [1, 2, 3]
         },
         settings: true,
     };
@@ -34,6 +35,9 @@ describe('sync json', function() {
                 }, {
                     key: 'settings',
                     value: true,
+                }, {
+                    key: 'mail.list',
+                    value: [1,2,3],
                 }, {
                     key: 'mail.toolbar.value',
                     value: 1,
