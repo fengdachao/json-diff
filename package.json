@@ -5,7 +5,7 @@
   ],
   "name": "locale-json-diff",
   "description": "JSON diff for locale",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "scripts": {
     "test": "mocha test/sync.js",
     "test:sync": "node bin/sync-json.js test/en.json test/ch.json",
